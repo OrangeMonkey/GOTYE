@@ -9,15 +9,13 @@ using System.Drawing;
 
 namespace GOTYE
 {
-    class Star: SpaceJunk
+    class Roid: SpaceJunk
     {
         static String[] texturenames = new[]
         {
-            "star0",
-            "star1"
-
+            "roid0"
         };
-            
+
         static BitmapTexture2D[] textures;
         static BitmapTexture2D[] Textures
         {
@@ -30,14 +28,8 @@ namespace GOTYE
                 return textures;
             }
         }
-        const float minrange = 1.5f;
-        const float maxrange = 64f;
-        const float basespeed = 32f;
-        const int colourmin = 200;
-        const int colourmax = 256;
-        public const int MaxStarCount = 5000;
-        
-        float depth;
+
+        float rotspeed;
 
         protected override Vector2 Velocity
         {
@@ -45,17 +37,23 @@ namespace GOTYE
             {
                 return new Vector2
                 {
-                    X = - basespeed / (depth + 1),
+                    X = -16,
                     Y = 0
                 };
             }
         }
-       
-        public Star(float x, float miny, float maxy)
-            : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], 1/(Program.Rand.NextSingle() * (maxrange - minrange) + minrange + 1)) 
+        
+        public Roid(float x, float miny, float maxy)
+            : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], 1) 
         {
-            depth = 1/Sprite.Scale.X - 1;
-            Sprite.Colour = Color.FromArgb(Program.Rand.Next(colourmin, colourmax), Program.Rand.Next(colourmin, colourmax), Program.Rand.Next(colourmin, colourmax));
-        }       
+            rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
+            Sprite.Colour = Color.SlateGray;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            Sprite.Rotation = Sprite.Rotation + rotspeed;
+        }
     }
 }

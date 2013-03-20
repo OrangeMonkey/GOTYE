@@ -15,12 +15,14 @@ namespace GOTYE
     {
         public static Random Rand = new Random();
         List<Star> stars;
+        List<Roid> roids;
         BitmapTexture2D jamesking;
         SpriteShader shader;
         Sprite jamessprite;
         Sprite player2;
         int playerx;
         int playery;
+        int playerspeed = 10;
         
         
 
@@ -34,7 +36,7 @@ namespace GOTYE
             player2 = new Sprite(jamesking, 0.5f);
             jamessprite.UseCentreAsOrigin = true;
             player2.UseCentreAsOrigin = true;
-            jamessprite.Colour = Color4.DarkCyan;
+            jamessprite.Colour = Color.FromArgb(Rand.Next(100, 255), Rand.Next(100, 255), Rand.Next(100, 255));
             player2.Colour = Color4.Crimson;
             CursorVisible = false;   
             Keyboard.KeyDown += (sender, ke) => 
@@ -56,22 +58,27 @@ namespace GOTYE
                     Close();
                 }
             };
+            GenerateStarField();
+            roids.Add(new Roid(Width, 0, Height));
+            roids.Add(new Roid(Width, 0, Height));
+            roids.Add(new Roid(Width, 0, Height));
+            roids.Add(new Roid(Width, 0, Height));
+        }
+        private void GenerateStarField()
+        {
+            stars.Clear();
             for (int i = 0; i < Star.MaxStarCount; ++i)
             {
                 stars.Add(new Star(Rand.Next(Width), 0, Height));
             }
         }
-
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
             GL.Viewport(ClientRectangle);
             shader.SetScreenSize(Width, Height);
 
-            stars.Clear();
-            for (int i = 0; i < Star.MaxStarCount; ++i) {
-                stars.Add(new Star(Rand.Next(Width), 0, Height));
-            }
+            GenerateStarField();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -80,19 +87,19 @@ namespace GOTYE
 
             if (Keyboard[OpenTK.Input.Key.Up])
             {
-                playery = playery - 1;
+                playery = playery - playerspeed;
             }
             if (Keyboard[OpenTK.Input.Key.Down])
             {
-                playery = playery + 1;
+                playery = playery + playerspeed;
             }
             if (Keyboard[OpenTK.Input.Key.Right])
             {
-                playerx = playerx + 1;
+                playerx = playerx + playerspeed;
             }
             if (Keyboard[OpenTK.Input.Key.Left])
             {
-                playerx = playerx - 1;
+                playerx = playerx - playerspeed;
             }
 
             for (int i = stars.Count - 1; i >= 0; --i )
@@ -102,6 +109,16 @@ namespace GOTYE
                 if (star.ShouldRemove(0))
                 {
                     stars[i] = new Star(Width, 0, Height);
+                }
+            }
+
+            for (int i = roids.Count - 1; i >= 0; --i)
+            {
+                var roid = roids[i];
+                roid.Update();
+                if (roid.ShouldRemove(0))
+                {
+                    roids[i] = new Roid(Width, 0, Height);
                 }
             }
         }
@@ -114,6 +131,10 @@ namespace GOTYE
             foreach (var star in stars)
             {
                 star.Draw(shader);
+            }
+            foreach (var roid in roids)
+            {
+                roid.Draw(shader);
             }
             jamessprite.X = Mouse.X;
             jamessprite.Y = Mouse.Y;
@@ -133,6 +154,7 @@ namespace GOTYE
             Height = 720;
             Title = "James in Orange III";
             stars = new List<Star>();
+            roids = new List<Roid>();
         }
 
         static void Main(string[] args)
