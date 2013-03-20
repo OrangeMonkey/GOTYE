@@ -19,9 +19,9 @@ namespace GOTYE
             
         static BitmapTexture2D[] textures;
         const float minrange = 1.5f;
-        const float maxrange = 8f;
+        const float maxrange = 64f;
         const float basespeed = 16f;
-        public const int MaxStarCount = 256;
+        public const int MaxStarCount = 5000;
         
         Sprite sprite;
         float depth;

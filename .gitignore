@@ -1,3 +1,5 @@
 GOTYE/bin
 GOTYE/obj
 *.suo
+*.pdb
+pingme.txt
