@@ -67,6 +67,11 @@ namespace GOTYE
             base.OnResize(e);
             GL.Viewport(ClientRectangle);
             shader.SetScreenSize(Width, Height);
+
+            stars.Clear();
+            for (int i = 0; i < Star.MaxStarCount; ++i) {
+                stars.Add(new Star(Rand.Next(Width), 0, Height));
+            }
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
