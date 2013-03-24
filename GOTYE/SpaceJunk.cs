@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
+using System.Drawing;
 
 namespace GOTYE
 {
@@ -12,6 +13,11 @@ namespace GOTYE
     {
         protected Sprite Sprite;
         protected abstract Vector2 Velocity
+        {
+            get;
+        }
+
+        public abstract float Depth
         {
             get;
         }
@@ -43,9 +49,16 @@ namespace GOTYE
             Sprite.Y = Sprite.Y + Velocity.Y;
         }
 
-        public virtual bool ShouldRemove(float cutoff)
+        public virtual bool ShouldRemove(Rectangle bounds)
         {
-            return Sprite.X + Sprite.Width/2 < cutoff;
+            if (Velocity.X >= 0)
+            {
+                return Sprite.X - Sprite.Width / 2 > bounds.Right;
+            }
+            else
+            {
+                return Sprite.X + Sprite.Width / 2 < bounds.Left;
+            }
         }
     }
 }

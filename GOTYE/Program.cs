@@ -9,16 +9,17 @@ using OpenTK.Input;
 using OpenTK.Graphics.OpenGL;
 using OpenTKTools;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace GOTYE
 {
     class Program : GameWindow
     {
         public static Random Rand = new Random();
-        List<Star> stars;
-        List<Roid> roids;
-        SpaceShip player;
+        List<SpaceJunk> junkage;
         SpriteShader shader;
+        int framecount;
+        Stopwatch timer;
 
         public static MouseDevice MouseDevice
         {
@@ -38,7 +39,7 @@ namespace GOTYE
             base.OnLoad(e);
             GL.ClearColor(Color4.Black);
             shader = new SpriteShader(Width, Height);
-            CursorVisible = false;   
+            CursorVisible = false;
             Keyboard.KeyDown += (sender, ke) => 
             {
                 if (ke.Key == OpenTK.Input.Key.Enter && Keyboard[OpenTK.Input.Key.AltLeft])
@@ -59,18 +60,32 @@ namespace GOTYE
                 }
             };
             GenerateStarField();
-            roids.Add(new Roid(Width, 0, Height));
-            roids.Add(new Roid(Width, 0, Height));
-            roids.Add(new Roid(Width, 0, Height));
-            roids.Add(new Roid(Width, 0, Height));
-            player = new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru);
+            AddJunk(new Roid(Width, 0, Height));
+            AddJunk(new Roid(Width, 0, Height));
+            AddJunk(new Roid(Width, 0, Height));
+            AddJunk(new Roid(Width, 0, Height));
+            AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
         }
+
+        public void AddJunk(SpaceJunk junk)
+        {
+            for (int i = junkage.Count - 1; i >= 0; --i)
+            {
+                if (junkage[i].Depth > junk.Depth)
+                {
+                    junkage.Insert(i + 1, junk);
+                    return;
+                }
+            }
+            junkage.Insert(0, junk);
+        }
+
         private void GenerateStarField()
         {
-            stars.Clear();
+            junkage = junkage.Where(x => !(x is Star)).ToList();
             for (int i = 0; i < Star.MaxStarCount; ++i)
             {
-                stars.Add(new Star(Rand.Next(Width), 0, Height));
+                AddJunk(new Star(Rand.Next(Width), 0, Height));
             }
         }
         protected override void OnResize(EventArgs e)
@@ -86,30 +101,32 @@ namespace GOTYE
         {
             base.OnUpdateFrame(e);
 
+            if (timer.Elapsed.TotalSeconds > 1)
+            {
+                Title = "FPS:" + framecount + (framecount < 60 ? " D:" : " :D");
+                timer.Restart();
+                framecount = 0;
+            }
+
             MouseDevice = Mouse;
             KeyboardDevice = Keyboard;
 
-            for (int i = stars.Count - 1; i >= 0; --i )
+            for (int i = junkage.Count - 1; i >= 0; --i )
             {
-                var star = stars[i];
-                star.Update();
-                if (star.ShouldRemove(0))
+                var junk = junkage[i];
+                junk.Update();
+                if (junk.ShouldRemove(ClientRectangle))
                 {
-                    stars[i] = new Star(Width, 0, Height);
+                    if (junk is Star)
+                    {
+                        junkage[i] = new Star(Width, 0, Height);
+                    }
+                    else if (junk is Roid)
+                    {
+                        junkage[i] = new Roid(Width, 0, Height);
+                    }
                 }
             }
-
-            for (int i = roids.Count - 1; i >= 0; --i)
-            {
-                var roid = roids[i];
-                roid.Update();
-                if (roid.ShouldRemove(0))
-                {
-                    roids[i] = new Roid(Width, 0, Height);
-                }
-            }
-
-            player.Update();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -117,30 +134,29 @@ namespace GOTYE
             base.OnRenderFrame(e);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             shader.Begin();
-            foreach (var star in stars)
+            foreach (var junk in junkage)
             {
-                star.Draw(shader);
+                junk.Draw(shader);
             }
-            foreach (var roid in roids)
-            {
-                roid.Draw(shader);
-            }
-
-            player.Draw(shader);
 
             shader.End();
 
             SwapBuffers();
+
+            framecount = framecount + 1;
         }
 
         Program()
         {
-            WindowBorder = OpenTK.WindowBorder.Hidden;
+            WindowBorder = OpenTK.WindowBorder.Fixed;
             Width = 1280;
             Height = 720;
-            Title = "James in Orange III";
-            stars = new List<Star>();
-            roids = new List<Roid>();
+            Title = "";
+            VSync = VSyncMode.On;
+            junkage = new List<SpaceJunk>();
+            framecount = 0;
+            timer = new Stopwatch();
+            timer.Start();
         }
 
         static void Main(string[] args)

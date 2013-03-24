@@ -26,9 +26,14 @@ namespace GOTYE
         }
         
         Vector2 velocity;
-        protected override OpenTK.Vector2 Velocity
+        protected override Vector2 Velocity
         {
             get { return velocity; }
+        }
+
+        public override float Depth
+        {
+            get { return 0; }
         }
 
         public SpaceShip(Vector2 startpos)
@@ -49,6 +54,11 @@ namespace GOTYE
             velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;
             Sprite.Rotation = (float)Math.Atan2(velocity.Y, Star.BaseSpeed);
             base.Update();
+        }
+
+        public override bool ShouldRemove(Rectangle bounds)
+        {
+            return false;
         }
 
     }

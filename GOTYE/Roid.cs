@@ -15,8 +15,8 @@ namespace GOTYE
         static String[] texturenames = new[]
         {
             "roid1",
-            "roid2",
-            "roid3"
+            "roid2"
+            
         };
 
         static BitmapTexture2D[] textures;
@@ -44,6 +44,11 @@ namespace GOTYE
                     Y = 0
                 };
             }
+        }
+
+        public override float Depth
+        {
+            get { return 1; }
         }
         
         public Roid(float x, float miny, float maxy)

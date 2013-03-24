@@ -50,6 +50,11 @@ namespace GOTYE
                 };
             }
         }
+
+        public override float Depth
+        {
+            get { return depth; }
+        }
        
         public Star(float x, float miny, float maxy)
             : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], 1/(Program.Rand.NextSingle() * (maxrange - minrange) + minrange + 1)) 
