@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Input;
 using OpenTK.Graphics.OpenGL;
 using OpenTKTools;
 using System.Drawing;
@@ -16,28 +17,27 @@ namespace GOTYE
         public static Random Rand = new Random();
         List<Star> stars;
         List<Roid> roids;
-        BitmapTexture2D jamesking;
+        SpaceShip player;
         SpriteShader shader;
-        Sprite jamessprite;
-        Sprite player2;
-        int playerx;
-        int playery;
-        int playerspeed = 10;
-        
-        
+
+        public static MouseDevice MouseDevice
+        {
+            get;
+            private set;
+
+        }
+
+        public static KeyboardDevice KeyboardDevice
+        {
+            get;
+            private set;
+        }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             GL.ClearColor(Color4.Black);
             shader = new SpriteShader(Width, Height);
-            jamesking = new BitmapTexture2D((Bitmap)Bitmap.FromFile("..\\..\\res\\gotyeship.png"));
-            jamessprite = new Sprite(jamesking, 0.5f);
-            player2 = new Sprite(jamesking, 0.5f);
-            jamessprite.UseCentreAsOrigin = true;
-            player2.UseCentreAsOrigin = true;
-            jamessprite.Colour = Color.FromArgb(Rand.Next(100, 255), Rand.Next(100, 255), Rand.Next(100, 255));
-            player2.Colour = Color4.Crimson;
             CursorVisible = false;   
             Keyboard.KeyDown += (sender, ke) => 
             {
@@ -63,6 +63,7 @@ namespace GOTYE
             roids.Add(new Roid(Width, 0, Height));
             roids.Add(new Roid(Width, 0, Height));
             roids.Add(new Roid(Width, 0, Height));
+            player = new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru);
         }
         private void GenerateStarField()
         {
@@ -85,22 +86,8 @@ namespace GOTYE
         {
             base.OnUpdateFrame(e);
 
-            if (Keyboard[OpenTK.Input.Key.Up])
-            {
-                playery = playery - playerspeed;
-            }
-            if (Keyboard[OpenTK.Input.Key.Down])
-            {
-                playery = playery + playerspeed;
-            }
-            if (Keyboard[OpenTK.Input.Key.Right])
-            {
-                playerx = playerx + playerspeed;
-            }
-            if (Keyboard[OpenTK.Input.Key.Left])
-            {
-                playerx = playerx - playerspeed;
-            }
+            MouseDevice = Mouse;
+            KeyboardDevice = Keyboard;
 
             for (int i = stars.Count - 1; i >= 0; --i )
             {
@@ -121,6 +108,8 @@ namespace GOTYE
                     roids[i] = new Roid(Width, 0, Height);
                 }
             }
+
+            player.Update();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -136,12 +125,9 @@ namespace GOTYE
             {
                 roid.Draw(shader);
             }
-            jamessprite.X = Mouse.X;
-            jamessprite.Y = Mouse.Y;
-            player2.X = playerx;
-            player2.Y = playery;
-            jamessprite.Render(shader);
-            player2.Render(shader);
+
+            player.Draw(shader);
+
             shader.End();
 
             SwapBuffers();

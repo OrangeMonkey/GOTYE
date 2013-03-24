@@ -24,6 +24,14 @@ namespace GOTYE
             Sprite.Y = Program.Rand.NextSingle() * (maxy - miny) + miny;
         }
 
+        public SpaceJunk(float x, float y, BitmapTexture2D texture, float scale)
+        {
+            Sprite = new Sprite(texture, scale);
+            Sprite.UseCentreAsOrigin = true;
+            Sprite.X = x;
+            Sprite.Y = y;
+        }
+
         public virtual void Draw(SpriteShader shader)
         {
             Sprite.Render(shader);

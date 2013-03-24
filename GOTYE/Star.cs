@@ -32,7 +32,7 @@ namespace GOTYE
         }
         const float minrange = 1.5f;
         const float maxrange = 64f;
-        const float basespeed = 32f;
+        public const float BaseSpeed = 32f;
         const int colourmin = 200;
         const int colourmax = 256;
         public const int MaxStarCount = 5000;
@@ -45,7 +45,7 @@ namespace GOTYE
             {
                 return new Vector2
                 {
-                    X = - basespeed / (depth + 1),
+                    X = - BaseSpeed / (depth + 1),
                     Y = 0
                 };
             }

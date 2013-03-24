@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using OpenTKTools;
+using OpenTK.Graphics;
 using System.Drawing;
 
 namespace GOTYE
@@ -13,7 +14,9 @@ namespace GOTYE
     {
         static String[] texturenames = new[]
         {
-            "roid0"
+            "roid1",
+            "roid2",
+            "roid3"
         };
 
         static BitmapTexture2D[] textures;
@@ -44,10 +47,11 @@ namespace GOTYE
         }
         
         public Roid(float x, float miny, float maxy)
-            : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], 1) 
+            : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], Program.Rand.NextSingle() * 1.75f + 0.25f) 
         {
+            Sprite.X = Sprite.X + Sprite.Width;
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
-            Sprite.Colour = Color.SlateGray;
+            Sprite.Colour = Color4.SlateGray;
         }
 
         public override void Update()
