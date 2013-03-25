@@ -22,6 +22,12 @@ namespace GOTYE
             get;
         }
 
+        public Program Scene
+        {
+            get;
+            set;
+        }
+
         public SpaceJunk(float x, float miny, float maxy, BitmapTexture2D texture, float scale)
         {            
             Sprite = new Sprite(texture, scale);

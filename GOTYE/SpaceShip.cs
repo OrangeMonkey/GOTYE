@@ -50,6 +50,11 @@ namespace GOTYE
 
         public override void Update()
         {
+            if (Program.MouseDevice[OpenTK.Input.MouseButton.Left])
+            {
+                Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation, Colour4.Red));
+            }
+
             velocity.X = (Program.MouseDevice.X - Sprite.X) * 0.1f;
             velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;
             Sprite.Rotation = (float)Math.Atan2(velocity.Y, Star.BaseSpeed);

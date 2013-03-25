@@ -69,6 +69,7 @@ namespace GOTYE
 
         public void AddJunk(SpaceJunk junk)
         {
+            junk.Scene = this;
             for (int i = junkage.Count - 1; i >= 0; --i)
             {
                 if (junkage[i].Depth > junk.Depth)
