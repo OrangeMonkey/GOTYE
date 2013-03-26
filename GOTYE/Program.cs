@@ -20,6 +20,7 @@ namespace GOTYE
         SpriteShader shader;
         int framecount;
         Stopwatch timer;
+        Stopwatch starttimer;
 
         public static MouseDevice MouseDevice
         {
@@ -67,6 +68,11 @@ namespace GOTYE
             AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
         }
 
+        public double CurrentTime()
+        {
+            return starttimer.Elapsed.TotalSeconds;
+        }
+
         public void AddJunk(SpaceJunk junk)
         {
             junk.Scene = this;
@@ -112,22 +118,24 @@ namespace GOTYE
             MouseDevice = Mouse;
             KeyboardDevice = Keyboard;
 
-            for (int i = junkage.Count - 1; i >= 0; --i )
+
+
+            junkage.ToList().ForEach(junk =>
             {
-                var junk = junkage[i];
                 junk.Update();
                 if (junk.ShouldRemove(ClientRectangle))
                 {
+                    junkage.Remove(junk);
                     if (junk is Star)
                     {
-                        junkage[i] = new Star(Width, 0, Height);
+                        AddJunk(new Star(Width, 0, Height));
                     }
                     else if (junk is Roid)
                     {
-                        junkage[i] = new Roid(Width, 0, Height);
+                        AddJunk(new Roid(Width, 0, Height));
                     }
                 }
-            }
+            });
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -158,6 +166,8 @@ namespace GOTYE
             framecount = 0;
             timer = new Stopwatch();
             timer.Start();
+            starttimer = new Stopwatch();
+            starttimer.Start();
         }
 
         static void Main(string[] args)

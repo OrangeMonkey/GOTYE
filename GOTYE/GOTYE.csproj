@@ -58,6 +58,7 @@
     <Compile Include="Roid.cs" />
     <Compile Include="SpaceShip.cs" />
     <Compile Include="Star.cs" />
+    <Compile Include="Trail.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

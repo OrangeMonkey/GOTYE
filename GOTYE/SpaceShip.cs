@@ -24,7 +24,9 @@ namespace GOTYE
                 return texture;
             }
         }
-        
+
+        double nextpewtime;
+
         Vector2 velocity;
         protected override Vector2 Velocity
         {
@@ -52,8 +54,15 @@ namespace GOTYE
         {
             if (Program.MouseDevice[OpenTK.Input.MouseButton.Left])
             {
-                Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation, Colour4.Red));
+                if (Scene.CurrentTime() > nextpewtime)
+                {
+                    nextpewtime = Scene.CurrentTime() + 0.25;
+                    Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation, Colour4.Red));
+                }
+
             }
+
+            Scene.AddJunk(new Trail(Sprite.Position, Sprite.Rotation, Color.FromArgb(70, Color.RoyalBlue)));
 
             velocity.X = (Program.MouseDevice.X - Sprite.X) * 0.1f;
             velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;

@@ -10,9 +10,9 @@ using System.Drawing;
 namespace GOTYE
 {
     using Colour4 = OpenTK.Graphics.Color4;
-    class SpaceFlare : SpaceJunk
+    class Trail : SpaceJunk
     {
-        const float pewspeed = 20f;
+        float trailspeed = Star.BaseSpeed;
         static BitmapTexture2D texture;
         static BitmapTexture2D Texture
         {
@@ -20,13 +20,12 @@ namespace GOTYE
             {
                 if (texture == null)
                 {
-                    texture = new BitmapTexture2D((Bitmap)Bitmap.FromFile("..\\..\\res\\pew1.png"));
+                    texture = new BitmapTexture2D((Bitmap)Bitmap.FromFile("..\\..\\res\\trail0.png"));
                 }
                 return texture;
             }
         }
         Vector2 velocity;
-
 
         protected override Vector2 Velocity
         {
@@ -35,18 +34,24 @@ namespace GOTYE
 
         public override float Depth
         {
-            get { return 0.5f; }
+            get { return 0.6f; }
         }
 
-        public SpaceFlare(Vector2 startpos, float angle, Colour4 colour)
-            : base(startpos.X, startpos.Y, Texture, 0.75f)
+        public override void Draw(SpriteShader shader)
+        {
+            Sprite.Scale = Sprite.Scale * 0.95f;
+            base.Draw(shader);
+        }
+
+        public Trail(Vector2 startpos, float angle, Colour4 colour)
+            : base(startpos.X - 32f, startpos.Y, Texture, 0.75f)
         {
             Sprite.Colour = colour;
             Sprite.Rotation = angle;
             velocity = new Vector2
             {
-                X = (float)Math.Cos(angle) * pewspeed,
-                Y = (float)Math.Sin(angle) * pewspeed
+                X = (float)Math.Cos(angle) * -trailspeed,
+                Y = (float)Math.Sin(angle) * -trailspeed
             };
         }
     }
