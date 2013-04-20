@@ -12,7 +12,7 @@ namespace GOTYE
     using Colour4 = OpenTK.Graphics.Color4;
     class SpaceFlare : SpaceJunk
     {
-        const float pewspeed = 20f;
+        const float pewspeed = Star.BaseSpeed;
         static BitmapTexture2D texture;
         static BitmapTexture2D Texture
         {
@@ -26,6 +26,8 @@ namespace GOTYE
             }
         }
         Vector2 velocity;
+
+        bool hashit;
 
 
         protected override Vector2 Velocity
@@ -48,6 +50,26 @@ namespace GOTYE
                 X = (float)Math.Cos(angle) * pewspeed,
                 Y = (float)Math.Sin(angle) * pewspeed
             };
+            hashit = false;
+        }
+
+        public override bool ShouldRemove(Rectangle bounds)
+        {
+            return hashit || base.ShouldRemove(bounds);
+        }
+
+        public override void Update(IEnumerable<SpaceJunk> junkage)
+        {
+            base.Update(junkage);
+            foreach (SpaceJunk junk in junkage)
+            {
+                if (junk is Roid && junk.IsHit(Sprite.Position))
+                {
+                    ((Damagable)junk).Damage(25);
+                    hashit = true;
+                    return;
+                }
+            }
         }
     }
 }

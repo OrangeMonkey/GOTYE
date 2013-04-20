@@ -10,7 +10,7 @@ using System.Drawing;
 
 namespace GOTYE
 {
-    class Roid: SpaceJunk
+    class Roid: Damagable
     {
         static String[] texturenames = new[]
         {
@@ -54,14 +54,27 @@ namespace GOTYE
         public Roid(float x, float miny, float maxy)
             : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], Program.Rand.NextSingle() * 1.75f + 0.25f) 
         {
+            HP = 100;
             Sprite.X = Sprite.X + Sprite.Width;
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
             Sprite.Colour = Color4.SlateGray;
         }
 
-        public override void Update()
+        protected override void OnDamaged(int amount)
         {
-            base.Update();
+            Sprite.Colour = Color4.Red;
+        }
+
+        public override bool IsHit(Vector2 pos)
+        {
+            float radius = Sprite.Width / 2;
+            float distance = (pos - Sprite.Position).Length;
+            return radius > distance;
+        }
+
+        public override void Update(IEnumerable<SpaceJunk> junkage)
+        {
+            base.Update(junkage);
             Sprite.Rotation = Sprite.Rotation + rotspeed;
         }
     }

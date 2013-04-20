@@ -50,13 +50,13 @@ namespace GOTYE
 
         }
 
-        public override void Update()
+        public override void Update(IEnumerable<SpaceJunk> junkage)
         {
             if (Program.MouseDevice[OpenTK.Input.MouseButton.Left])
             {
                 if (Scene.CurrentTime() > nextpewtime)
                 {
-                    nextpewtime = Scene.CurrentTime() + 0.25;
+                    nextpewtime = Scene.CurrentTime() + 0.1;
                     Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation, Colour4.Red));
                 }
 
@@ -67,7 +67,7 @@ namespace GOTYE
             velocity.X = (Program.MouseDevice.X - Sprite.X) * 0.1f;
             velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;
             Sprite.Rotation = (float)Math.Atan2(velocity.Y, Star.BaseSpeed);
-            base.Update();
+            base.Update(junkage);
         }
 
         public override bool ShouldRemove(Rectangle bounds)

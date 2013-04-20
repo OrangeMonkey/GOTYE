@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Damagable.cs" />
     <Compile Include="SpaceFlare.cs" />
     <Compile Include="SpaceJunk.cs" />
     <Compile Include="Program.cs" />

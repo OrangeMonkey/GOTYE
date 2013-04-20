@@ -122,7 +122,7 @@ namespace GOTYE
 
             junkage.ToList().ForEach(junk =>
             {
-                junk.Update();
+                junk.Update(junkage);
                 if (junk.ShouldRemove(ClientRectangle))
                 {
                     junkage.Remove(junk);

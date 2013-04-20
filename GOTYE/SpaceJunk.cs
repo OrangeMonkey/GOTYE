@@ -49,10 +49,15 @@ namespace GOTYE
             Sprite.Render(shader);
         }
 
-        public virtual void Update()
+        public virtual void Update(IEnumerable <SpaceJunk> junkage)
         {
             Sprite.X = Sprite.X + Velocity.X;
             Sprite.Y = Sprite.Y + Velocity.Y;
+        }
+
+        public virtual bool IsHit(Vector2 pos)
+        {
+            return false;
         }
 
         public virtual bool ShouldRemove(Rectangle bounds)
