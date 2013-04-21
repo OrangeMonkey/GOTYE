@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK;
 
 namespace GOTYE
 {
@@ -27,25 +28,26 @@ namespace GOTYE
 
         }
 
-        public virtual void Damage(int amount)
+        public override bool ShouldRemove(System.Drawing.Rectangle bounds)
+        {
+            return HP <= 0 || base.ShouldRemove(bounds);
+        }
+
+        public virtual void Damage(int amount, Vector2 force)
         {
             if (HP < amount)
             {
                 amount = HP;
             }
             HP = HP - amount;
-            if (HP > 0)
-            {
-                OnDamaged(amount);
-            }
-
-            else
-            {
+            OnDamaged(amount, force);
+            if (HP <= 0)
+            {                           
                 OnKilled();
             }
         }
 
-        protected virtual void OnDamaged(int amount)
+        protected virtual void OnDamaged(int amount, Vector2 force)
         {
 
         }

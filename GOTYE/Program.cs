@@ -21,6 +21,9 @@ namespace GOTYE
         int framecount;
         Stopwatch timer;
         Stopwatch starttimer;
+        double stagestarttime;
+        Stage currentstage;
+        int stagenumber;
 
         public static MouseDevice MouseDevice
         {
@@ -61,16 +64,20 @@ namespace GOTYE
                 }
             };
             GenerateStarField();
-            AddJunk(new Roid(Width, 0, Height));
-            AddJunk(new Roid(Width, 0, Height));
-            AddJunk(new Roid(Width, 0, Height));
-            AddJunk(new Roid(Width, 0, Height));
+            stagestarttime = CurrentTime();
+            stagenumber = 0;
+            currentstage = Stage.GenerateStage(stagenumber);
             AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
         }
 
         public double CurrentTime()
         {
             return starttimer.Elapsed.TotalSeconds;
+        }
+
+        public double StageTime()
+        {
+            return CurrentTime() - stagestarttime;
         }
 
         public void AddJunk(SpaceJunk junk)
@@ -118,7 +125,19 @@ namespace GOTYE
             MouseDevice = Mouse;
             KeyboardDevice = Keyboard;
 
+            var tospawn = currentstage.ChooseNextObstacle(StageTime(), Width, 0, Height);
 
+            if (tospawn != null)
+            {
+                AddJunk(tospawn);
+            }
+
+            else if (currentstage.HasEnded())
+            {
+                stagenumber = stagenumber + 1;
+                currentstage = Stage.GenerateStage(stagenumber);
+                stagestarttime = CurrentTime() + 2;
+            }
 
             junkage.ToList().ForEach(junk =>
             {
@@ -129,11 +148,7 @@ namespace GOTYE
                     if (junk is Star)
                     {
                         AddJunk(new Star(Width, 0, Height));
-                    }
-                    else if (junk is Roid)
-                    {
-                        AddJunk(new Roid(Width, 0, Height));
-                    }
+                    }                 
                 }
             });
         }
@@ -156,10 +171,9 @@ namespace GOTYE
         }
 
         Program()
+            : base (1280, 720)
         {
             WindowBorder = OpenTK.WindowBorder.Fixed;
-            Width = 1280;
-            Height = 720;
             Title = "";
             VSync = VSyncMode.On;
             junkage = new List<SpaceJunk>();

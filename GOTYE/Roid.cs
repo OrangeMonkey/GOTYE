@@ -34,15 +34,13 @@ namespace GOTYE
 
         float rotspeed;
 
+        private Vector2 velocity;
+
         protected override Vector2 Velocity
         {
             get
             {
-                return new Vector2
-                {
-                    X = -16,
-                    Y = 0
-                };
+                return velocity;
             }
         }
 
@@ -54,15 +52,43 @@ namespace GOTYE
         public Roid(float x, float miny, float maxy)
             : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], Program.Rand.NextSingle() * 1.75f + 0.25f) 
         {
-            HP = 100;
+            HP = (int)(Sprite.Scale.X * 50);
             Sprite.X = Sprite.X + Sprite.Width;
+            velocity = new Vector2
+            {
+                X = -16,
+                Y = 0
+            };
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
             Sprite.Colour = Color4.SlateGray;
         }
 
-        protected override void OnDamaged(int amount)
+        public Roid(Vector2 pos, float scale)
+            : base(pos.X, pos.Y, Textures[Program.Rand.Next(Textures.Length)], scale)
+        {
+            HP = (int)(Sprite.Scale.X * 50);
+            velocity = new Vector2
+            {
+                X = -16,
+                Y = Program.Rand.NextSingle() * 4 - 2
+            };
+            rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
+            Sprite.Colour = Color4.SlateGray;
+        }
+
+        protected override void OnDamaged(int amount, Vector2 force)
+        {
+            velocity = velocity + (force / Sprite.Scale.X);
+            Sprite.Colour = Color4.Orange;
+        }
+
+        protected override void OnKilled()
         {
             Sprite.Colour = Color4.Red;
+            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
+            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
+            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
+            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
         }
 
         public override bool IsHit(Vector2 pos)
