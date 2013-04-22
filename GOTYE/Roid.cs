@@ -67,11 +67,7 @@ namespace GOTYE
             : base(pos.X, pos.Y, Textures[Program.Rand.Next(Textures.Length)], scale)
         {
             HP = (int)(Sprite.Scale.X * 50);
-            velocity = new Vector2
-            {
-                X = vel.X + Program.Rand.NextSingle() * 4 - 2,
-                Y = vel.Y + Program.Rand.NextSingle() * 4 - 2
-            };
+            velocity = vel;
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
             Sprite.Colour = Color4.SlateGray;
         }
@@ -85,11 +81,18 @@ namespace GOTYE
         protected override void OnKilled()
         {
             Sprite.Colour = Color4.Red;
-            int pieces = 4;
+            int pieces = Program.Rand.Next(3,7);
             float newscale = Sprite.Scale.X / (float)Math.Sqrt(pieces);
+            float edgedist = (Sprite.Scale.X - newscale) * Sprite.Texture.Width / 3f;
             for (int i = 0; i < pieces; ++i)
             {
-                Scene.AddJunk(new Roid(Sprite.Position, Velocity, newscale));
+                double ang = (i * Math.PI * 2 / pieces) + (Program.Rand.NextDouble() * Math.PI / pieces) * 2;
+                Vector2 offset = new Vector2 
+                {
+                    X = (float)Math.Cos(ang),
+                    Y = (float)Math.Sin(ang)
+                };
+                Scene.AddJunk(new Roid(Sprite.Position + offset * edgedist, Velocity + offset * Program.Rand.NextSingle() * 2, newscale));
             }            
         }
 

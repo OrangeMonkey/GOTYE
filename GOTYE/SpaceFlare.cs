@@ -65,7 +65,7 @@ namespace GOTYE
             {
                 if (junk is Roid && junk.IsHit(Sprite.Position))
                 {
-                    ((Damagable)junk).Damage(100, velocity / 16);
+                    ((Damagable)junk).Damage(25, velocity / 16);
                     hashit = true;
                     return;
                 }
