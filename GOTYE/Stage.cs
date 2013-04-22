@@ -42,7 +42,7 @@ namespace GOTYE
             }
         }
 
-        public SpaceJunk ChooseNextObstacle(double time, float x, float miny, float maxy)
+        public SpaceJunk ChooseNextObstacle(double time, float x, float miny, float maxy, int stagenumber)
         {
             if (spawntimes.Count == 0)
             {
@@ -53,13 +53,13 @@ namespace GOTYE
             {
                 var pair = spawntimes.First();
                 spawntimes.Remove(pair);
-                var c = pair.Key.GetConstructor(new Type[] { typeof(float), typeof(float), typeof(float) });
+                var c = pair.Key.GetConstructor(new Type[] { typeof(float), typeof(float), typeof(float), typeof(int) });
                 if (c == null)
                 {
                     return null;
                 }
 
-                return (SpaceJunk) c.Invoke(new object[] { x, miny, maxy });
+                return (SpaceJunk) c.Invoke(new object[] { x, miny, maxy, stagenumber });
             }
 
             return null;

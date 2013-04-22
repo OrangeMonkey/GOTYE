@@ -49,14 +49,14 @@ namespace GOTYE
             get { return 1; }
         }
         
-        public Roid(float x, float miny, float maxy)
+        public Roid(float x, float miny, float maxy, int scenenumber)
             : base(x, miny, maxy, Textures[Program.Rand.Next(Textures.Length)], Program.Rand.NextSingle() * 1.75f + 0.25f) 
         {
             HP = (int)(Sprite.Scale.X * 50);
             Sprite.X = Sprite.X + Sprite.Width;
             velocity = new Vector2
             {
-                X = -16,
+                X = -(8 + (float) Math.Sqrt(scenenumber)) / Sprite.Scale.X,
                 Y = 0
             };
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;

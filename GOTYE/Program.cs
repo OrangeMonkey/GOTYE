@@ -24,6 +24,13 @@ namespace GOTYE
         double stagestarttime;
         Stage currentstage;
         int stagenumber;
+        public int StageNumber
+        {
+            get
+            {
+                return stagenumber;
+            }
+        }
 
         public static MouseDevice MouseDevice
         {
@@ -125,7 +132,7 @@ namespace GOTYE
             MouseDevice = Mouse;
             KeyboardDevice = Keyboard;
 
-            var tospawn = currentstage.ChooseNextObstacle(StageTime(), Width, 0, Height);
+            var tospawn = currentstage.ChooseNextObstacle(StageTime(), Width, 0, Height, stagenumber);
 
             if (tospawn != null)
             {
