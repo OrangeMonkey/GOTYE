@@ -63,14 +63,14 @@ namespace GOTYE
             Sprite.Colour = Color4.SlateGray;
         }
 
-        public Roid(Vector2 pos, float scale)
+        private Roid(Vector2 pos, Vector2 vel, float scale)
             : base(pos.X, pos.Y, Textures[Program.Rand.Next(Textures.Length)], scale)
         {
             HP = (int)(Sprite.Scale.X * 50);
             velocity = new Vector2
             {
-                X = -16,
-                Y = Program.Rand.NextSingle() * 4 - 2
+                X = vel.X + Program.Rand.NextSingle() * 4 - 2,
+                Y = vel.Y + Program.Rand.NextSingle() * 4 - 2
             };
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
             Sprite.Colour = Color4.SlateGray;
@@ -85,10 +85,12 @@ namespace GOTYE
         protected override void OnKilled()
         {
             Sprite.Colour = Color4.Red;
-            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
-            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
-            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
-            Scene.AddJunk(new Roid(Sprite.Position, Sprite.Scale.X / 4));
+            int pieces = 4;
+            float newscale = Sprite.Scale.X / (float)Math.Sqrt(pieces);
+            for (int i = 0; i < pieces; ++i)
+            {
+                Scene.AddJunk(new Roid(Sprite.Position, Velocity, newscale));
+            }            
         }
 
         public override bool IsHit(Vector2 pos)
