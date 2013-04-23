@@ -12,7 +12,18 @@ namespace GOTYE
     abstract class SpaceJunk
     {
         protected Sprite Sprite;
-        protected abstract Vector2 Velocity
+
+        public Vector2 Position
+        {
+            get { return Sprite.Position; }
+        }
+
+        public float Scale
+        {
+            get { return Sprite.Scale.X; }
+        }
+
+        public abstract Vector2 Velocity
         {
             get;
         }
@@ -55,8 +66,15 @@ namespace GOTYE
             Sprite.Y = Sprite.Y + Velocity.Y;
         }
 
-        public virtual bool IsHit(Vector2 pos)
+        public bool IsHit(Vector2 pos)
         {
+            Vector2 hit;
+            return IsHit(pos, pos, out hit);
+        }
+
+        public virtual bool IsHit(Vector2 start, Vector2 end, out Vector2 hit)
+        {
+            hit = new Vector2();
             return false;
         }
 
