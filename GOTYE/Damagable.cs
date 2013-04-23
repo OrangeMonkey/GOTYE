@@ -33,21 +33,21 @@ namespace GOTYE
             return HP <= 0 || base.ShouldRemove(bounds);
         }
 
-        public virtual void Damage(int amount, Vector2 force)
+        public virtual void Damage(int amount, Vector2 hitpos, Vector2 force)
         {
             if (HP < amount)
             {
                 amount = HP;
             }
             HP = HP - amount;
-            OnDamaged(amount, force);
+            OnDamaged(amount, hitpos, force);
             if (HP <= 0)
             {                           
                 OnKilled();
             }
         }
 
-        protected virtual void OnDamaged(int amount, Vector2 force)
+        protected virtual void OnDamaged(int amount, Vector2 hitpos, Vector2 force)
         {
 
         }

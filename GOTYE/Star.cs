@@ -39,7 +39,7 @@ namespace GOTYE
         
         float depth;
 
-        protected override Vector2 Velocity
+        public override Vector2 Velocity
         {
             get
             {

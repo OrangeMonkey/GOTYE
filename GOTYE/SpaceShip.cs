@@ -28,7 +28,7 @@ namespace GOTYE
         double nextpewtime;
 
         Vector2 velocity;
-        protected override Vector2 Velocity
+        public override Vector2 Velocity
         {
             get { return velocity; }
         }

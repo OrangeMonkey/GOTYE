@@ -30,7 +30,7 @@ namespace GOTYE
         bool hashit;
 
 
-        protected override Vector2 Velocity
+        public override Vector2 Velocity
         {
             get { return velocity; }
         }
@@ -60,12 +60,19 @@ namespace GOTYE
 
         public override void Update(IEnumerable<SpaceJunk> junkage)
         {
+            Vector2 oldPos = Position;
+
+            if (hashit) return;
+
             base.Update(junkage);
             foreach (SpaceJunk junk in junkage)
             {
-                if (junk is Roid && junk.IsHit(Sprite.Position))
+                Vector2 hit;
+                if (junk is Roid && junk.IsHit(oldPos + junk.Velocity, Position, out hit))
                 {
-                    ((Damagable)junk).Damage(25, velocity / 16);
+                    ((Damagable)junk).Damage(25, hit, velocity / 16);
+                    Sprite.Position = hit;
+                    velocity = new Vector2();
                     hashit = true;
                     return;
                 }
