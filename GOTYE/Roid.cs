@@ -15,8 +15,7 @@ namespace GOTYE
         static String[] texturenames = new[]
         {
             "roid1",
-            "roid2"
-            
+            "roid2"            
         };
 
         static BitmapTexture2D[] textures;
@@ -39,7 +38,7 @@ namespace GOTYE
 
         private Vector2 velocity;
 
-        protected override Vector2 Velocity
+        public override Vector2 Velocity
         {
             get
             {
@@ -77,10 +76,18 @@ namespace GOTYE
             Sprite.Colour = roidcolour;
         }
 
-        protected override void OnDamaged(int amount, Vector2 force)
+        protected override void OnDamaged(int amount, Vector2 hitpos, Vector2 force)
         {
-            velocity = velocity + (force / Sprite.Scale.X);
-            //Sprite.Colour = Color4.Orange;
+            Vector2 normal = Position - hitpos;
+            normal.Normalize();
+
+            Vector2 tangent = new Vector2(-normal.Y, normal.X);
+
+            Vector2 forceNormal = force;
+            forceNormal.Normalize();
+
+            velocity = velocity + force * (float) Math.Abs(Vector2.Dot(forceNormal, normal)) / Sprite.Scale.X;
+            rotspeed = rotspeed - force.Length * Vector2.Dot(forceNormal, tangent) / (Sprite.Scale.X * MathHelper.Pi * 16f);
         }
 
         protected override void OnKilled()
@@ -101,11 +108,48 @@ namespace GOTYE
             }            
         }
 
-        public override bool IsHit(Vector2 pos)
+        public override bool IsHit(Vector2 start, Vector2 end, out Vector2 hit)
         {
-            float radius = Sprite.Width / 2;
-            float distance = (pos - Sprite.Position).Length;
-            return radius > distance;
+            hit = new Vector2();
+            double r = Sprite.Width / 2.0;
+
+            Vector2d ba = (Vector2d) (end - start);
+            Vector2d ca = (Vector2d) (Position - start);
+
+            double a = ba.X * ba.X + ba.Y * ba.Y;
+            double bBy2 = ba.X * ca.X + ba.Y * ca.Y;
+            double c = ca.X * ca.X + ca.Y * ca.Y - r * r;
+
+            double pBy2 = bBy2 / a;
+            double q = c / a;
+
+            double disc = pBy2 * pBy2 - q;
+            if (disc < 0) {
+                return false;
+            }
+
+            double tmpSqrt = Math.Sqrt(disc);
+            double abScalingFactor1 = -pBy2 + tmpSqrt;
+            double abScalingFactor2 = -pBy2 - tmpSqrt;
+
+            Vector2d p1 = new Vector2d(start.X - ba.X * abScalingFactor1, start.Y - ba.Y * abScalingFactor1);
+            Vector2d p2 = new Vector2d(start.X - ba.X * abScalingFactor2, start.Y - ba.Y * abScalingFactor2);
+
+            double t1 = (p1.X - start.X) / ba.X;
+            double t2 = (p2.X - start.X) / ba.X;
+
+            if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) {
+                hit = (p1.X < p2.X) ? (Vector2) p1 : (Vector2) p2;
+                return true;
+            } else if (t1 >= 0 && t1 <= 1) {
+                hit = (Vector2) p1;
+                return true;
+            } else if (t2 >= 0 && t2 <= 1) {
+                hit = (Vector2) p2;
+                return true;
+            } else {
+                return false;
+            }
         }
 
         public override void Update(IEnumerable<SpaceJunk> junkage)
