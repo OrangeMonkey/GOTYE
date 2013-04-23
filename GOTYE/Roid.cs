@@ -32,6 +32,9 @@ namespace GOTYE
             }
         }
 
+        int colourmin = 80;
+        int colourmax = 150;
+
         float rotspeed;
 
         private Vector2 velocity;
@@ -54,33 +57,35 @@ namespace GOTYE
         {
             HP = (int)(Sprite.Scale.X * 50);
             Sprite.X = Sprite.X + Sprite.Width;
+            int roidcolour = Program.Rand.Next(colourmin, colourmax);
             velocity = new Vector2
             {
                 X = -(8 + (float) Math.Sqrt(scenenumber)) / Sprite.Scale.X,
                 Y = 0
             };
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
-            Sprite.Colour = Color4.SlateGray;
+            Sprite.Colour = Color.FromArgb(roidcolour, roidcolour, roidcolour);
+            
         }
 
-        private Roid(Vector2 pos, Vector2 vel, float scale)
+        private Roid(Vector2 pos, Vector2 vel, Color4 roidcolour, float scale)
             : base(pos.X, pos.Y, Textures[Program.Rand.Next(Textures.Length)], scale)
         {
             HP = (int)(Sprite.Scale.X * 50);
             velocity = vel;
             rotspeed = Program.Rand.NextSingle() * MathHelper.Pi / 10 - MathHelper.Pi / 20;
-            Sprite.Colour = Color4.SlateGray;
+            Sprite.Colour = roidcolour;
         }
 
         protected override void OnDamaged(int amount, Vector2 force)
         {
             velocity = velocity + (force / Sprite.Scale.X);
-            Sprite.Colour = Color4.Orange;
+            //Sprite.Colour = Color4.Orange;
         }
 
         protected override void OnKilled()
         {
-            Sprite.Colour = Color4.Red;
+            //Sprite.Colour = Color4.Red;
             int pieces = Program.Rand.Next(3,7);
             float newscale = Sprite.Scale.X / (float)Math.Sqrt(pieces);
             float edgedist = (Sprite.Scale.X - newscale) * Sprite.Texture.Width / 3f;
@@ -92,7 +97,7 @@ namespace GOTYE
                     X = (float)Math.Cos(ang),
                     Y = (float)Math.Sin(ang)
                 };
-                Scene.AddJunk(new Roid(Sprite.Position + offset * edgedist, Velocity + offset * Program.Rand.NextSingle() * 2, newscale));
+                Scene.AddJunk(new Roid(Sprite.Position + offset * edgedist, Velocity + offset * Program.Rand.NextSingle() * 2, Sprite.Colour, newscale));
             }            
         }
 

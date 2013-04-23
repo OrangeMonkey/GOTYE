@@ -29,7 +29,6 @@ namespace GOTYE
 
         bool hashit;
 
-
         protected override Vector2 Velocity
         {
             get { return velocity; }

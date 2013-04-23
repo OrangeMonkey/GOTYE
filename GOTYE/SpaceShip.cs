@@ -57,7 +57,17 @@ namespace GOTYE
                 if (Scene.CurrentTime() > nextpewtime)
                 {
                     nextpewtime = Scene.CurrentTime() + 0.1;
-                    Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation, Colour4.Red));
+
+                    Vector2 t = new Vector2
+                    {
+                        X = (float)Math.Cos(Sprite.Rotation + Math.PI / 2),
+                        Y = (float)Math.Sin(Sprite.Rotation + Math.PI / 2)
+                    };
+
+                    Scene.AddJunk(new SpaceFlare(Sprite.Position + 25 * t, Sprite.Rotation, Colour4.Red));
+                    Scene.AddJunk(new SpaceFlare(Sprite.Position - 25 * t, Sprite.Rotation, Colour4.Red));
+                    //Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation + 25, Colour4.Red));
+                    //Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation - 25, Colour4.Red));
                 }
 
             }
