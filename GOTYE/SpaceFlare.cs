@@ -29,7 +29,6 @@ namespace GOTYE
 
         bool hashit;
 
-
         public override Vector2 Velocity
         {
             get { return velocity; }
@@ -70,7 +69,7 @@ namespace GOTYE
                 Vector2 hit;
                 if (junk is Roid && junk.IsHit(oldPos + junk.Velocity, Position, out hit))
                 {
-                    ((Damagable)junk).Damage(25, hit, velocity / 16);
+                    ((Damagable)junk).Damage(12, hit, velocity / 32);
                     Sprite.Position = hit;
                     velocity = new Vector2();
                     hashit = true;

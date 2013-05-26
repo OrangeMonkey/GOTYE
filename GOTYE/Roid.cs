@@ -14,8 +14,8 @@ namespace GOTYE
     {
         static String[] texturenames = new[]
         {
-            "roid1",
-            "roid2"            
+            "roid4",
+            "roid5"            
         };
 
         static BitmapTexture2D[] textures;

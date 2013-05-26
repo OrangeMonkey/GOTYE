@@ -10,7 +10,7 @@ using OpenTK;
 namespace GOTYE
 {
     using Colour4 = OpenTK.Graphics.Color4;
-    class SpaceShip: SpaceJunk
+    class SpaceShip: Damagable
     {
         static BitmapTexture2D texture;
         static BitmapTexture2D Texture
@@ -47,7 +47,7 @@ namespace GOTYE
         public SpaceShip(Vector2 startpos, Colour4 colour)
             : base(startpos.X, startpos.Y, Texture, 0.5f)
         {
-
+            HP = 100;
         }
 
         public override void Update(IEnumerable<SpaceJunk> junkage)
@@ -73,6 +73,17 @@ namespace GOTYE
             }
 
             Scene.AddJunk(new Trail(Sprite.Position, Sprite.Rotation, Color.FromArgb(70, Color.RoyalBlue)));
+
+            foreach (SpaceJunk junk in junkage)
+            {
+                if (junk is Roid && junk.IsTouching(this))
+                {
+                    if (Sprite.Height < junk.Size.Y)
+                    {
+                        Damage((int)(Sprite.Scale.X * 10), junk.Position, junk.Velocity * junk.Size.X * junk.Size.Y);
+                    }
+                }
+            }
 
             velocity.X = (Program.MouseDevice.X - Sprite.X) * 0.1f;
             velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;

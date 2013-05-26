@@ -17,6 +17,7 @@ namespace GOTYE
     {
         public static Random Rand = new Random();
         List<SpaceJunk> junkage;
+        HealthBar healthbar;
         SpriteShader shader;
         int framecount;
         Stopwatch timer;
@@ -74,7 +75,8 @@ namespace GOTYE
             stagestarttime = CurrentTime();
             stagenumber = 0;
             currentstage = Stage.GenerateStage(stagenumber);
-            AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
+            SpaceShip ship = AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
+            healthbar = new HealthBar(new Vector2(32, 32), ship);
         }
 
         public double CurrentTime()
@@ -87,7 +89,8 @@ namespace GOTYE
             return CurrentTime() - stagestarttime;
         }
 
-        public void AddJunk(SpaceJunk junk)
+        public T AddJunk<T>(T junk)
+            where T : SpaceJunk
         {
             junk.Scene = this;
             for (int i = junkage.Count - 1; i >= 0; --i)
@@ -95,10 +98,11 @@ namespace GOTYE
                 if (junkage[i].Depth > junk.Depth)
                 {
                     junkage.Insert(i + 1, junk);
-                    return;
+                    return junk;
                 }
             }
             junkage.Insert(0, junk);
+            return junk;
         }
 
         private void GenerateStarField()
@@ -146,10 +150,14 @@ namespace GOTYE
                 stagestarttime = CurrentTime() + 2;
             }
 
+            Rectangle bounds = ClientRectangle;
+            //bounds.Offset(32, 32);
+            //bounds.Size = new Size(bounds.Width - 64, bounds.Height - 64);
+
             junkage.ToList().ForEach(junk =>
             {
                 junk.Update(junkage);
-                if (junk.ShouldRemove(ClientRectangle))
+                if (junk.ShouldRemove(bounds))
                 {
                     junkage.Remove(junk);
                     if (junk is Star)
@@ -169,6 +177,8 @@ namespace GOTYE
             {
                 junk.Draw(shader);
             }
+
+            healthbar.Draw(shader);
 
             shader.End();
 

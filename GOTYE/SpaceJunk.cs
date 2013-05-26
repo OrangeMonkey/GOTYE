@@ -9,13 +9,18 @@ using System.Drawing;
 
 namespace GOTYE
 {
-    abstract class SpaceJunk
+    abstract class SpaceJunk : IRenderable
     {
         protected Sprite Sprite;
 
         public Vector2 Position
         {
             get { return Sprite.Position; }
+        }
+
+        public Vector2 Size
+        {
+            get { return Sprite.Size; }
         }
 
         public float Scale
@@ -66,6 +71,15 @@ namespace GOTYE
             Sprite.Y = Sprite.Y + Velocity.Y;
         }
 
+        public bool IsTouching(SpaceJunk that)
+        {
+            Vector2 center = that.Position;
+            float thatradius = Math.Min(that.Sprite.Width, that.Sprite.Height) / 2;
+            float thisradius = Math.Min(Sprite.Width,Sprite.Height) / 2;
+            float distance = (center - Sprite.Position).Length;
+            return distance <= thatradius + thisradius;
+        }
+
         public bool IsHit(Vector2 pos)
         {
             Vector2 hit;
@@ -80,14 +94,26 @@ namespace GOTYE
 
         public virtual bool ShouldRemove(Rectangle bounds)
         {
+            bool outofbounds = false;
+
             if (Velocity.X >= 0)
             {
-                return Sprite.X - Sprite.Width / 2 > bounds.Right;
+                outofbounds = Sprite.X - Sprite.Width / 2 > bounds.Right;
             }
             else
             {
-                return Sprite.X + Sprite.Width / 2 < bounds.Left;
+                outofbounds = Sprite.X + Sprite.Width / 2 < bounds.Left;
             }
+
+            if (Velocity.Y >= 0)
+            {
+                outofbounds = outofbounds || Sprite.Y - Sprite.Height / 2 > bounds.Bottom;
+            }
+            else
+            {
+                outofbounds = outofbounds || Sprite.Y + Sprite.Height / 2 < bounds.Top;
+            }
+            return outofbounds;
         }
     }
 }
