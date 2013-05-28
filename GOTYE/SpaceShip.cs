@@ -26,6 +26,12 @@ namespace GOTYE
         }
 
         double nextpewtime;
+        double immuneend;
+
+        public bool IsImmune
+        {
+            get { return immuneend > Scene.CurrentTime(); }
+        }
 
         Vector2 velocity;
         public override Vector2 Velocity
@@ -52,7 +58,7 @@ namespace GOTYE
 
         public override void Update(IEnumerable<SpaceJunk> junkage)
         {
-            if (Program.MouseDevice[OpenTK.Input.MouseButton.Left])
+            if (Program.MouseDevice[OpenTK.Input.MouseButton.Left] && !IsImmune)
             {
                 if (Scene.CurrentTime() > nextpewtime)
                 {
@@ -74,21 +80,41 @@ namespace GOTYE
 
             Scene.AddJunk(new Trail(Sprite.Position, Sprite.Rotation, Color.FromArgb(70, Color.RoyalBlue)));
 
-            foreach (SpaceJunk junk in junkage)
+            if (!IsImmune)
             {
-                if (junk is Roid && junk.IsTouching(this))
+                foreach (SpaceJunk junk in junkage)
                 {
-                    if (Sprite.Height < junk.Size.Y)
+                    if (junk is Roid && junk.IsTouching(this))
                     {
-                        Damage((int)(Sprite.Scale.X * 10), junk.Position, junk.Velocity * junk.Size.X * junk.Size.Y);
+                        if (Sprite.Height < junk.Size.Y)
+                        {
+                            Damage((int)(Sprite.Scale.X * 10), junk.Position, junk.Velocity * junk.Size.X * junk.Size.Y);
+                            ((Roid)junk).Splode(true);
+                        }
                     }
                 }
             }
+
 
             velocity.X = (Program.MouseDevice.X - Sprite.X) * 0.1f;
             velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;
             Sprite.Rotation = (float)Math.Atan2(velocity.Y, Star.BaseSpeed);
             base.Update(junkage);
+        }
+
+        public override void Draw(SpriteShader shader)
+        {
+            int alpha = IsImmune ? (int)(Pulse(0.25) * 191) : 255;
+
+            Sprite.Colour = Color.FromArgb(alpha, (Color)Sprite.Colour);
+            
+            base.Draw(shader);
+        }
+
+        protected override void OnDamaged(int amount, Vector2 hitpos, Vector2 force)
+        {
+            base.OnDamaged(amount, hitpos, force);
+            immuneend = Scene.CurrentTime() + 2;
         }
 
         public override bool ShouldRemove(Rectangle bounds)

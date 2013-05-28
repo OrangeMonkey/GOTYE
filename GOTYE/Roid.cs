@@ -34,6 +34,10 @@ namespace GOTYE
         int colourmin = 80;
         int colourmax = 150;
 
+        bool hassploded;
+
+        double splosiontime;
+
         float rotspeed;
 
         private Vector2 velocity;
@@ -104,8 +108,21 @@ namespace GOTYE
                     X = (float)Math.Cos(ang),
                     Y = (float)Math.Sin(ang)
                 };
-                Scene.AddJunk(new Roid(Sprite.Position + offset * edgedist, Velocity + offset * Program.Rand.NextSingle() * 2, Sprite.Colour, newscale));
+                Roid child = Scene.AddJunk(new Roid(Sprite.Position + offset * edgedist, Velocity + offset * Program.Rand.NextSingle() * 2, Sprite.Colour, newscale));
+                if (hassploded)
+                {
+                    child.Splode(false);
+                }
             }            
+        }
+
+        public void Splode(bool immediate)
+        {
+            if (immediate || Program.Rand.NextDouble() < Scale - 1f/8f)
+            {
+                hassploded = true;
+                splosiontime = immediate ? Scene.CurrentTime() : Program.Rand.NextDouble() * 0.5;
+            }
         }
 
         public override bool IsHit(Vector2 start, Vector2 end, out Vector2 hit)
@@ -156,6 +173,10 @@ namespace GOTYE
         {
             base.Update(junkage);
             Sprite.Rotation = Sprite.Rotation + rotspeed;
+            if (hassploded && Scene.CurrentTime() > splosiontime)
+            {
+                Damage(HP, Position, new Vector2());
+            }
         }
     }
 }

@@ -13,6 +13,11 @@ namespace GOTYE
     {
         protected Sprite Sprite;
 
+        public double Pulse(double period)
+        {
+            return (Math.Sin(Scene.CurrentTime() * Math.PI * 2 / period) + 1) * 0.5;
+        }
+    
         public Vector2 Position
         {
             get { return Sprite.Position; }

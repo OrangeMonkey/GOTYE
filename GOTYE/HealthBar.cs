@@ -18,7 +18,7 @@ namespace GOTYE
             set;
         }
         private Sprite sprite;
-        const int fullbarcount = 10;
+        const int fullbarcount = 20;
         static BitmapTexture2D texture;
         static BitmapTexture2D Texture
         {
@@ -26,7 +26,7 @@ namespace GOTYE
             {
                 if (texture == null)
                 {
-                    texture = new BitmapTexture2D((Bitmap)(Bitmap.FromFile("..\\..\\res\\hp0.png")));
+                    texture = new BitmapTexture2D((Bitmap)(Bitmap.FromFile("..\\..\\res\\hp1.png")));
                 }
                 return texture;
             }
