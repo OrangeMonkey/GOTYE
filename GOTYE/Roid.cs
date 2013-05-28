@@ -82,16 +82,19 @@ namespace GOTYE
 
         protected override void OnDamaged(int amount, Vector2 hitpos, Vector2 force)
         {
-            Vector2 normal = Position - hitpos;
-            normal.Normalize();
+            if (hitpos != Position && force.LengthSquared > 0)
+            {
+                Vector2 normal = Position - hitpos;
+                normal.Normalize();
 
-            Vector2 tangent = new Vector2(-normal.Y, normal.X);
+                Vector2 tangent = new Vector2(-normal.Y, normal.X);
 
-            Vector2 forceNormal = force;
-            forceNormal.Normalize();
+                Vector2 forceNormal = force;
+                forceNormal.Normalize();
 
-            velocity = velocity + force * (float) Math.Abs(Vector2.Dot(forceNormal, normal)) / Sprite.Scale.X;
-            rotspeed = rotspeed - force.Length * Vector2.Dot(forceNormal, tangent) / (Sprite.Scale.X * MathHelper.Pi * 16f);
+                velocity = velocity + force * (float)Math.Abs(Vector2.Dot(forceNormal, normal)) / Sprite.Scale.X;
+                rotspeed = rotspeed - force.Length * Vector2.Dot(forceNormal, tangent) / (Sprite.Scale.X * MathHelper.Pi * 16f);
+            }
         }
 
         protected override void OnKilled()
