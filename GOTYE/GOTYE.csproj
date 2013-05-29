@@ -62,6 +62,7 @@
     <Compile Include="SpaceShip.cs" />
     <Compile Include="Stage.cs" />
     <Compile Include="Star.cs" />
+    <Compile Include="Tools.cs" />
     <Compile Include="Trail.cs" />
   </ItemGroup>
   <ItemGroup>

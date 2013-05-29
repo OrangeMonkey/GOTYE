@@ -27,6 +27,7 @@ namespace GOTYE
 
         double nextpewtime;
         double immuneend;
+        public int Score = 0;
 
         public bool IsImmune
         {
@@ -88,9 +89,15 @@ namespace GOTYE
                     {
                         if (Sprite.Height < junk.Size.Y)
                         {
-                            Damage((int)(Sprite.Scale.X * 10), junk.Position, junk.Velocity * junk.Size.X * junk.Size.Y);
+                            Damage((int)(junk.Scale * 10), junk.Position, junk.Velocity * junk.Size.X * junk.Size.Y);
                             ((Roid)junk).Splode(true);
                         }
+                        else
+                        {
+                            Score = Score + (int)(junk.Scale * 10);
+                            junk.Remove();
+                        }
+                        break;
                     }
                 }
             }

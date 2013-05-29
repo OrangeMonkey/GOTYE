@@ -12,6 +12,7 @@ namespace GOTYE
     abstract class SpaceJunk : IRenderable
     {
         protected Sprite Sprite;
+        bool isremoved;
 
         public double Pulse(double period)
         {
@@ -97,8 +98,17 @@ namespace GOTYE
             return false;
         }
 
+        public void Remove()
+        {
+            isremoved = true;
+        }
+
         public virtual bool ShouldRemove(Rectangle bounds)
         {
+            if (isremoved)
+            {
+                return true;
+            }
             bool outofbounds = false;
 
             if (Velocity.X >= 0)

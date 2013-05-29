@@ -124,7 +124,7 @@ namespace GOTYE
             if (immediate || Program.Rand.NextDouble() < Scale - 1f/8f)
             {
                 hassploded = true;
-                splosiontime = immediate ? Scene.CurrentTime() : Program.Rand.NextDouble() * 0.5;
+                splosiontime = immediate ? Scene.CurrentTime() : Scene.CurrentTime() + Program.Rand.NextDouble() * 0.5;
             }
         }
 

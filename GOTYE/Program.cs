@@ -10,6 +10,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTKTools;
 using System.Drawing;
 using System.Diagnostics;
+using Fant = OpenTKTools.Font;
 
 namespace GOTYE
 {
@@ -18,7 +19,11 @@ namespace GOTYE
         public static Random Rand = new Random();
         List<SpaceJunk> junkage;
         HealthBar healthbar;
+        SpaceShip ship;
         SpriteShader shader;
+        Fant defaultfont;
+        Text scoretext;
+        //Text testtext;
         int framecount;
         Stopwatch timer;
         Stopwatch starttimer;
@@ -51,6 +56,10 @@ namespace GOTYE
             base.OnLoad(e);
             GL.ClearColor(Color4.Black);
             shader = new SpriteShader(Width, Height);
+            defaultfont = new Fant(new BitmapTexture2D((Bitmap)Bitmap.FromFile("..\\..\\res\\fontlarge0.png")));
+            scoretext = new Text(defaultfont, 3);
+            //testtext = new Text(defaultfont, 10);
+            //testtext.String = "Boobs";
             CursorVisible = false;
             Keyboard.KeyDown += (sender, ke) => 
             {
@@ -70,12 +79,12 @@ namespace GOTYE
                 {
                     Close();
                 }
-            };
+            };            
             GenerateStarField();
             stagestarttime = CurrentTime();
             stagenumber = 0;
             currentstage = Stage.GenerateStage(stagenumber);
-            SpaceShip ship = AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
+            ship = AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
             healthbar = new HealthBar(new Vector2(32, 32), ship);
         }
 
@@ -128,7 +137,8 @@ namespace GOTYE
 
             if (timer.Elapsed.TotalSeconds > 1)
             {
-                Title = "FPS:" + framecount + (framecount < 60 ? " D:" : " :D");
+                scoretext.String = "$" + ship.Score;
+                //testtext.String = "FPS:" + framecount + (framecount < 60 ? " D:" : " :D");
                 timer.Restart();
                 framecount = 0;
             }
@@ -179,6 +189,10 @@ namespace GOTYE
             }
 
             healthbar.Draw(shader);
+            scoretext.X = ClientSize.Width - scoretext.FindTextWidth();
+            scoretext.Render(shader);
+
+            //testtext.Render(shader);
 
             shader.End();
 
@@ -191,7 +205,7 @@ namespace GOTYE
             : base (1280, 720)
         {
             WindowBorder = OpenTK.WindowBorder.Fixed;
-            Title = "";
+            Title = "GOTYE: Game of the Year Edition";
             VSync = VSyncMode.On;
             junkage = new List<SpaceJunk>();
             framecount = 0;
