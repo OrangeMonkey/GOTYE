@@ -28,6 +28,7 @@ namespace GOTYE
         double nextpewtime;
         double immuneend;
         public int Score = 0;
+        float rotspeed;
 
         public bool IsImmune
         {
@@ -59,53 +60,62 @@ namespace GOTYE
 
         public override void Update(IEnumerable<SpaceJunk> junkage)
         {
-            if (Program.MouseDevice[OpenTK.Input.MouseButton.Left] && !IsImmune)
+            if (!IsAlive)
             {
-                if (Scene.CurrentTime() > nextpewtime)
+                Sprite.Rotation += rotspeed;
+                velocity.X -= 0.01f;
+                velocity.Y *= 0.9f;
+            }
+            else
+            {
+                if (Program.MouseDevice[OpenTK.Input.MouseButton.Left] && !IsImmune)
                 {
-                    nextpewtime = Scene.CurrentTime() + 0.1;
-
-                    Vector2 t = new Vector2
+                    if (Scene.CurrentTime() > nextpewtime)
                     {
-                        X = (float)Math.Cos(Sprite.Rotation + Math.PI / 2),
-                        Y = (float)Math.Sin(Sprite.Rotation + Math.PI / 2)
-                    };
+                        nextpewtime = Scene.CurrentTime() + 0.1;
 
-                    Scene.AddJunk(new SpaceFlare(Sprite.Position + 25 * t, Sprite.Rotation, Colour4.Red));
-                    Scene.AddJunk(new SpaceFlare(Sprite.Position - 25 * t, Sprite.Rotation, Colour4.Red));
-                    //Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation + 25, Colour4.Red));
-                    //Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation - 25, Colour4.Red));
+                        Vector2 t = new Vector2
+                        {
+                            X = (float)Math.Cos(Sprite.Rotation + Math.PI / 2),
+                            Y = (float)Math.Sin(Sprite.Rotation + Math.PI / 2)
+                        };
+
+                        Scene.AddJunk(new SpaceFlare(Sprite.Position + 25 * t, Sprite.Rotation, Colour4.Red));
+                        Scene.AddJunk(new SpaceFlare(Sprite.Position - 25 * t, Sprite.Rotation, Colour4.Red));
+                        //Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation + 25, Colour4.Red));
+                        //Scene.AddJunk(new SpaceFlare(Sprite.Position, Sprite.Rotation - 25, Colour4.Red));
+                    }
+
                 }
 
-            }
+                Scene.AddJunk(new Trail(Sprite.Position, Sprite.Rotation, Color.FromArgb(70, Color.RoyalBlue)));
 
-            Scene.AddJunk(new Trail(Sprite.Position, Sprite.Rotation, Color.FromArgb(70, Color.RoyalBlue)));
-
-            if (!IsImmune)
-            {
-                foreach (SpaceJunk junk in junkage)
+                if (!IsImmune)
                 {
-                    if (junk is Roid && junk.IsTouching(this))
+                    foreach (SpaceJunk junk in junkage)
                     {
-                        if (Sprite.Height < junk.Size.Y)
+                        if (junk is Roid && junk.IsTouching(this))
                         {
-                            Damage((int)(junk.Scale * 10), junk.Position, junk.Velocity * junk.Size.X * junk.Size.Y);
-                            ((Roid)junk).Splode(true);
+                            if (Sprite.Height < junk.Size.Y)
+                            {
+                                Damage((int)(junk.Scale * 10), junk.Position, junk.Velocity * junk.Size.X * junk.Size.Y);
+                                ((Roid)junk).Splode(true);
+                            }
+                            else
+                            {
+                                Score = Score + (int)(junk.Scale * 10);
+                                junk.Remove();
+                            }
+                            break;
                         }
-                        else
-                        {
-                            Score = Score + (int)(junk.Scale * 10);
-                            junk.Remove();
-                        }
-                        break;
                     }
                 }
+
+
+                velocity.X = (Program.MouseDevice.X - Sprite.X) * 0.1f;
+                velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;
+                Sprite.Rotation = (float)Math.Atan2(velocity.Y, Star.BaseSpeed);
             }
-
-
-            velocity.X = (Program.MouseDevice.X - Sprite.X) * 0.1f;
-            velocity.Y = (Program.MouseDevice.Y - Sprite.Y) * 0.1f;
-            Sprite.Rotation = (float)Math.Atan2(velocity.Y, Star.BaseSpeed);
             base.Update(junkage);
         }
 
@@ -122,6 +132,12 @@ namespace GOTYE
         {
             base.OnDamaged(amount, hitpos, force);
             immuneend = Scene.CurrentTime() + 2;
+        }
+
+        protected override void OnKilled()
+        {
+            rotspeed = Program.Rand.NextSingle() * 0.5f - 0.25f;
+            base.OnKilled();
         }
 
         public override bool ShouldRemove(Rectangle bounds)

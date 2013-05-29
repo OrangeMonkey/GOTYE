@@ -16,6 +16,14 @@ namespace GOTYE
             get;
         }
 
+        public bool IsAlive
+        {
+            get
+            {
+                return HP > 0;
+            }
+        }
+
         public Damagable(float x, float miny, float maxy, BitmapTexture2D texture, float scale)
             : base(x, miny, maxy, texture, scale)
         {            

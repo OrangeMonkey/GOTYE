@@ -23,13 +23,16 @@ namespace GOTYE
         SpriteShader shader;
         Fant defaultfont;
         Text scoretext;
+        Text gameover;
         //Text testtext;
+        bool paintcollectables;
         int framecount;
         Stopwatch timer;
         Stopwatch starttimer;
         double stagestarttime;
         Stage currentstage;
         int stagenumber;
+
         public int StageNumber
         {
             get
@@ -58,6 +61,8 @@ namespace GOTYE
             shader = new SpriteShader(Width, Height);
             defaultfont = new Fant(new BitmapTexture2D((Bitmap)Bitmap.FromFile("..\\..\\res\\fontlarge0.png")));
             scoretext = new Text(defaultfont, 3);
+            gameover = new Text(defaultfont, 10);
+            gameover.String = "Game Over\nContinue Y/N";
             //testtext = new Text(defaultfont, 10);
             //testtext.String = "Boobs";
             CursorVisible = false;
@@ -82,6 +87,7 @@ namespace GOTYE
             };            
             GenerateStarField();
             stagestarttime = CurrentTime();
+            paintcollectables = true;
             stagenumber = 0;
             currentstage = Stage.GenerateStage(stagenumber);
             ship = AddJunk(new SpaceShip(new Vector2(Width / 4, Height / 2), Color4.Peru));
@@ -101,6 +107,10 @@ namespace GOTYE
         public T AddJunk<T>(T junk)
             where T : SpaceJunk
         {
+            if (junk is Roid && paintcollectables)
+            {
+                ((Roid)(SpaceJunk)junk).Paint(ship.Size.Y);
+            }
             junk.Scene = this;
             for (int i = junkage.Count - 1; i >= 0; --i)
             {
@@ -134,10 +144,9 @@ namespace GOTYE
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-
+            scoretext.String = "$" + ship.Score;
             if (timer.Elapsed.TotalSeconds > 1)
             {
-                scoretext.String = "$" + ship.Score;
                 //testtext.String = "FPS:" + framecount + (framecount < 60 ? " D:" : " :D");
                 timer.Restart();
                 framecount = 0;
@@ -149,7 +158,7 @@ namespace GOTYE
             var tospawn = currentstage.ChooseNextObstacle(StageTime(), Width, 0, Height, stagenumber);
 
             if (tospawn != null)
-            {
+            {                
                 AddJunk(tospawn);
             }
 
@@ -189,9 +198,15 @@ namespace GOTYE
             }
 
             healthbar.Draw(shader);
-            scoretext.X = ClientSize.Width - scoretext.FindTextWidth();
+            scoretext.X = ClientSize.Width - scoretext.FindTextWidth() - 32;
+            scoretext.Y = 32;
             scoretext.Render(shader);
-
+            if (!ship.IsAlive)
+            {
+                gameover.X = ClientSize.Width / 2;
+                gameover.Y = ClientSize.Height / 2;
+                gameover.Render(shader);
+            }
             //testtext.Render(shader);
 
             shader.End();

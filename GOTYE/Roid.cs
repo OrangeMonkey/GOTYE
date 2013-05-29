@@ -80,6 +80,24 @@ namespace GOTYE
             Sprite.Colour = roidcolour;
         }
 
+        public void Paint(float shipsize)
+        {
+            if (shipsize < Sprite.Size.Y)
+            {
+                Sprite.Colour = new Color4(1, Sprite.Colour.B, Sprite.Colour.B, 1);
+            }
+            else
+            {
+                Sprite.Colour = new Color4(Sprite.Colour.B, 1, Sprite.Colour.B, 1);
+            }
+        }
+
+        public void Unpaint()
+        {
+            float b = Sprite.Colour.B;
+            Sprite.Colour = new Color4(b, b, b, 1);
+        }
+
         protected override void OnDamaged(int amount, Vector2 hitpos, Vector2 force)
         {
             if (hitpos != Position && force.LengthSquared > 0)
